@@ -5,7 +5,7 @@
 // ====================== INTRO ANIMATION (từ Test folder) ======================
 let introComplete = false;
 let introStartTime = null;
-const introDuration = 3000;
+const introDuration = 300; // 0.6 giây - nhanh gấp đôi
 
 // Biến toàn cục cho intro animation
 let introCanvas = null;
@@ -14,9 +14,9 @@ let introStars = [];
 let introExplosions = [];
 let introShootingStars = [];
 const introFullText = ["Happy new year", "Bích Diệp"];
-const introFontSize = 100;
-const introFontFamily = "Arial";
-const introLineHeight = 120;
+const introFontSize = 180;
+const introFontFamily = "'Dancing Script', cursive"; // Quay lại Dancing Script
+const introLineHeight = 200; // Cách xa hơn để không bị chồng
 const introBearX = 70;
 let introBearY = 0;
 let introDots = [];
