@@ -186,6 +186,7 @@ const store = {
 		// 将在init()中取消挂起
 		paused: true,
 		soundEnabled: true,
+		autoSound: true, // Tự động bật âm thanh khi người dùng tương tác
 		menuOpen: false,
 		openHelpTopic: null,
 		fullscreen: isFullscreen(),
@@ -1321,9 +1322,28 @@ const shellTypes = {
 
 const shellNames = Object.keys(shellTypes);
 
+// Biến để theo dõi tương tác đầu tiên của người dùng
+let hasUserInteracted = false;
+
 function init() {
 	// Remove loading state
 	appNodes.stageContainer.classList.remove("remove");
+
+	// Thêm listener cho tương tác người dùng lần đầu tiên
+	function onFirstInteraction() {
+		if (!hasUserInteracted) {
+			hasUserInteracted = true;
+			// Nếu autoSound bật, hãy bật âm thanh
+			if (store.state.autoSound) {
+				store.setState({ soundEnabled: true });
+			}
+		}
+	}
+
+	// Lắng nghe click, touch, keyboard
+	document.addEventListener('click', onFirstInteraction, { once: false });
+	document.addEventListener('touchstart', onFirstInteraction, { once: false });
+	document.addEventListener('keydown', onFirstInteraction, { once: false });
 
 	// Khởi tạo transform ban đầu cho wishes layer
 	if (appNodes.wishesLayer) {
@@ -3147,17 +3167,10 @@ const soundManager = {
 	},
 
 	resumeAll() {
+		// Resume audio context immediately to unlock it with user gesture
+		this.ctx.resume();
 		// Play a sound with no volume for iOS. This 'unlocks' the audio context when the user first enables sound.
 		this.playSound("lift", 0);
-		// Chrome mobile requires interaction before starting audio context.
-		// The sound toggle button is triggered on 'touchstart', which doesn't seem to count as a full
-		// interaction to Chrome. I guess it needs a click? At any rate if the first thing the user does
-		// is enable audio, it doesn't work. Using a setTimeout allows the first interaction to be registered.
-		// Perhaps a better solution is to track whether the user has interacted, and if not but they try enabling
-		// sound, show a tooltip that they should tap again to enable sound.
-		setTimeout(() => {
-			this.ctx.resume();
-		}, 250);
 	},
 
 	// Private property used to throttle small burst sounds.
