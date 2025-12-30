@@ -222,6 +222,24 @@
 			.settings-btn {
 				display: none !important;
 			}
+
+			/* Intro rotate notice */
+			#intro-rotateNotice .overlay {
+				position: fixed;
+				z-index: 10001;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(0, 0, 0, 0.95);
+				color: white;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 22px;
+				text-align: center;
+				padding: 20px;
+			}
 		</style>
 		<meta name="msapplication-TileColor" content="#000000" />
 		<meta name="msapplication-TileImage" content="./images/favicon.png" />
@@ -259,6 +277,15 @@
 				</symbol>
 			</svg>
 		</div>
+		<!-- Intro Animation Canvas (từ Test folder) -->
+		<canvas id="intro-canvas" style="position: fixed; top: 0; left: 0; z-index: 9999; display: block;"></canvas>
+		<div id="intro-rotateNotice" style="display:none;">
+			<div class="overlay">
+				<p>Vui lòng xoay màn hình sang ngang để có trải nghiệm tốt nhất 🌟</p>
+			</div>
+		</div>
+		<img id="intro-bear" src="https://i.pinimg.com/originals/e5/c5/4c/e5c54cd43fd75a7ec5b7cf0f65838ec3.gif" alt="Bear" style="position: fixed; left: 10px; bottom: 50px; width: 110px; z-index: 10000;"/>
+		
 		<!-- App -->
 		<div class="container">
 			<div class="stage-container remove">

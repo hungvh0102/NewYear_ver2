@@ -2,6 +2,358 @@
 
 "use strict";
 
+// ====================== INTRO ANIMATION (từ Test folder) ======================
+let introComplete = false;
+let introStartTime = null;
+const introDuration = 3000;
+
+// Biến toàn cục cho intro animation
+let introCanvas = null;
+let introCtx = null;
+let introStars = [];
+let introExplosions = [];
+let introShootingStars = [];
+const introFullText = ["Happy new year", "Bích Diệp"];
+const introFontSize = 100;
+const introFontFamily = "Arial";
+const introLineHeight = 120;
+const introBearX = 70;
+let introBearY = 0;
+let introDots = [];
+let introTargetDotsQueue = [];
+let introCurrentCharIndex = 0;
+let introAnimationDone = false;
+
+function initIntroAnimation() {
+	introCanvas = document.getElementById('intro-canvas');
+	if (!introCanvas) return;
+	
+	introCtx = introCanvas.getContext('2d');
+	
+	function resizeIntroCanvas() {
+		introCanvas.width = window.innerWidth;
+		introCanvas.height = window.innerHeight;
+		introBearY = introCanvas.height - 80;
+
+		introStars.length = 0;
+		for (let i = 0; i < 300; i++) {
+			introStars.push({
+				x: Math.random() * introCanvas.width,
+				y: Math.random() * introCanvas.height,
+				radius: Math.random() * 1.5 + 0.5,
+				alpha: Math.random(),
+				delta: (Math.random() * 0.02) + 0.005
+			});
+		}
+
+		function checkOrientation() {
+			const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+			const isPortrait = window.innerHeight > window.innerWidth;
+
+			const notice = document.getElementById("intro-rotateNotice");
+			const bear = document.getElementById("intro-bear");
+			if (isMobile && isPortrait) {
+				notice.style.display = "block";
+				introCanvas.style.display = "none";
+				bear.style.display = "none";
+			} else {
+				notice.style.display = "none";
+				introCanvas.style.display = "block";
+				bear.style.display = "block";
+			}
+		}
+
+		window.addEventListener('resize', () => {
+			resizeIntroCanvas();
+			checkOrientation();
+		});
+		checkOrientation();
+
+		introTargetDotsQueue = [];
+		introCurrentCharIndex = 0;
+		introAnimationDone = false;
+		generateAllIntroTargetDots();
+	}
+
+	resizeIntroCanvas();
+
+	function generateIntroCharDots(char, x, y) {
+		const tempCanvas = document.createElement('canvas');
+		tempCanvas.width = introCanvas.width;
+		tempCanvas.height = introCanvas.height;
+		const tempCtx = tempCanvas.getContext('2d');
+
+		tempCtx.font = `bold ${introFontSize}px ${introFontFamily}`;
+		tempCtx.fillStyle = "red";
+		tempCtx.textAlign = "left";
+		tempCtx.fillText(char, x, y);
+
+		const imageData = tempCtx.getImageData(0, 0, introCanvas.width, introCanvas.height).data;
+		const charDots = [];
+
+		for (let y = 0; y < introCanvas.height; y += 4) {
+			for (let x = 0; x < introCanvas.width; x += 4) {
+				const index = (y * introCanvas.width + x) * 4;
+				if (imageData[index + 3] > 128) {
+					charDots.push({ x, y });
+				}
+			}
+		}
+
+		return charDots;
+	}
+
+	function generateAllIntroTargetDots() {
+		const tempCtx = document.createElement('canvas').getContext('2d');
+		tempCtx.font = `bold ${introFontSize}px ${introFontFamily}`;
+		const lines = introFullText;
+		const startY = (introCanvas.height - lines.length * introLineHeight) / 2;
+
+		lines.forEach((line, lineIndex) => {
+			const lineWidth = tempCtx.measureText(line).width;
+			let xCursor = (introCanvas.width - lineWidth) / 2;
+			const y = startY + lineIndex * introLineHeight;
+
+			for (let char of line) {
+				if (char === " ") {
+					xCursor += tempCtx.measureText(" ").width;
+					introTargetDotsQueue.push([]);
+					continue;
+				}
+
+				const charDots = generateIntroCharDots(char, xCursor, y);
+				introTargetDotsQueue.push(charDots);
+				xCursor += tempCtx.measureText(char).width;
+			}
+		});
+	}
+
+	function createIntroExplosion(x, y) {
+		const count = 20;
+		for (let i = 0; i < count; i++) {
+			const angle = Math.random() * Math.PI * 2;
+			const speed = Math.random() * 6 + 2;
+			introExplosions.push({
+				x,
+				y,
+				vx: Math.cos(angle) * speed,
+				vy: Math.sin(angle) * speed,
+				life: 60,
+				opacity: 1
+			});
+		}
+	}
+
+	function drawIntroStars() {
+		for (let star of introStars) {
+			star.alpha += star.delta;
+			if (star.alpha >= 1 || star.alpha <= 0) {
+				star.delta = -star.delta;
+			}
+
+			introCtx.save();
+			introCtx.globalAlpha = star.alpha;
+			introCtx.fillStyle = "white";
+			introCtx.beginPath();
+			introCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+			introCtx.fill();
+			introCtx.restore();
+		}
+	}
+
+	function createIntroShootingStar() {
+		const startX = Math.random() * introCanvas.width;
+		const startY = Math.random() * introCanvas.height / 2;
+		introShootingStars.push({
+			x: startX,
+			y: startY,
+			length: Math.random() * 300 + 100,
+			speed: Math.random() * 10 + 6,
+			angle: Math.PI / 4,
+			opacity: 1
+		});
+	}
+
+	function drawIntroShootingStars() {
+		for (let i = introShootingStars.length - 1; i >= 0; i--) {
+			const s = introShootingStars[i];
+			const endX = s.x - Math.cos(s.angle) * s.length;
+			const endY = s.y - Math.sin(s.angle) * s.length;
+
+			const gradient = introCtx.createLinearGradient(s.x, s.y, endX, endY);
+			gradient.addColorStop(0, `rgba(255, 255, 255, ${s.opacity})`);
+			gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+
+			introCtx.strokeStyle = gradient;
+			introCtx.lineWidth = 2;
+			introCtx.beginPath();
+			introCtx.moveTo(s.x, s.y);
+			introCtx.lineTo(endX, endY);
+			introCtx.stroke();
+
+			s.x += Math.cos(s.angle) * s.speed;
+			s.y += Math.sin(s.angle) * s.speed;
+			s.opacity -= 0.01;
+
+			if (s.opacity <= 0) {
+				introShootingStars.splice(i, 1);
+			}
+		}
+	}
+
+	function shootIntroDot() {
+		if (introAnimationDone || !introComplete) return;
+
+		while (
+			introCurrentCharIndex < introTargetDotsQueue.length &&
+			introTargetDotsQueue[introCurrentCharIndex].length === 0
+		) {
+			introCurrentCharIndex++;
+		}
+
+		const targetDots = introTargetDotsQueue[introCurrentCharIndex];
+		if (!targetDots || targetDots.length === 0) return;
+
+		const batch = 5;
+		for (let i = 0; i < batch; i++) {
+			const target = targetDots.shift();
+			if (!target) return;
+			const angle = Math.random() * Math.PI / 6 - Math.PI / 12;
+			const speed = 3 + Math.random() * 2;
+			introDots.push({
+				x: introBearX + 40 + Math.random() * 20,
+				y: introBearY - 20 + Math.random() * 10,
+				vx: Math.cos(angle) * speed,
+				vy: Math.sin(angle) * speed,
+				targetX: target.x,
+				targetY: target.y
+			});
+		}
+
+		if (targetDots.length === 0 && introCurrentCharIndex < introTargetDotsQueue.length - 1) {
+			introCurrentCharIndex++;
+		}
+	}
+
+	function animateIntro() {
+		const gradient = introCtx.createLinearGradient(0, 0, introCanvas.width, introCanvas.height);
+		gradient.addColorStop(0, "#0a001f");
+		gradient.addColorStop(1, "#1a0033");
+		introCtx.fillStyle = gradient;
+		introCtx.fillRect(0, 0, introCanvas.width, introCanvas.height);
+
+		drawIntroStars();
+		drawIntroShootingStars();
+
+		introDots.forEach(dot => {
+			const dx = dot.targetX - dot.x;
+			const dy = dot.targetY - dot.y;
+			dot.vx += dx * 0.002;
+			dot.vy += dy * 0.002;
+			dot.vx *= 0.95;
+			dot.vy *= 0.91;
+			dot.x += dot.vx;
+			dot.y += dot.vy;
+
+			introCtx.font = "16px Arial";
+			introCtx.textAlign = "center";
+			introCtx.textBaseline = "middle";
+			introCtx.fillText("❤️", dot.x, dot.y);
+		});
+
+		for (let i = introExplosions.length - 1; i >= 0; i--) {
+			const p = introExplosions[i];
+			p.x += p.vx;
+			p.y += p.vy;
+			p.vx *= 0.96;
+			p.vy *= 0.96;
+			p.life--;
+			p.opacity -= 0.015;
+
+			introCtx.globalAlpha = Math.max(p.opacity, 0);
+			introCtx.fillStyle = "white";
+			introCtx.beginPath();
+			introCtx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+			introCtx.fill();
+			introCtx.globalAlpha = 1;
+
+			if (p.life <= 0 || p.opacity <= 0) {
+				introExplosions.splice(i, 1);
+			}
+		}
+
+		// Kiểm tra nếu intro animation xong
+		if (
+			!introAnimationDone &&
+			introComplete &&
+			introCurrentCharIndex >= introTargetDotsQueue.length &&
+			introDots.every(dot => Math.abs(dot.targetX - dot.x) < 2 && Math.abs(dot.targetY - dot.y) < 2)
+		) {
+			introAnimationDone = true;
+			const bear = document.getElementById("intro-bear");
+			if (bear && bear.src !== "https://i.pinimg.com/originals/cf/e2/66/cfe2664925719a18a078c8c1b7552b9d.gif") {
+				bear.src = "https://i.pinimg.com/originals/7e/f6/9c/7ef69cd0a6b0b78526c8ce983b3296fc.gif";
+			}
+			// Sau 1 giây, ẩn intro và khởi tạo pháo hoa
+			setTimeout(() => {
+				introCanvas.style.display = 'none';
+				const noticeBg = document.getElementById('intro-rotateNotice');
+				if (noticeBg) noticeBg.style.display = 'none';
+				const bear = document.getElementById("intro-bear");
+				if (bear) bear.style.display = 'none';
+				init();
+			}, 1000);
+		}
+
+		if (!introAnimationDone) {
+			requestAnimationFrame(animateIntro);
+		}
+	}
+
+	// Bắt đầu intro animation
+	introComplete = false;
+	introStartTime = null;
+	
+	// Bắt đầu vòng lặp shootDot
+	const shootInterval = setInterval(() => {
+		shootIntroDot();
+		if (introAnimationDone) {
+			clearInterval(shootInterval);
+			clearInterval(shootStarInterval);
+		}
+	}, 30);
+
+	// Bắt đầu vòng lặp shooting star
+	const shootStarInterval = setInterval(() => {
+		if (!introAnimationDone) {
+			createIntroShootingStar();
+		}
+	}, 1500);
+
+	// Click listener
+	introCanvas.addEventListener("click", (e) => {
+		createIntroExplosion(e.clientX, e.clientY);
+	});
+
+	introCanvas.addEventListener("touchstart", (e) => {
+		const touch = e.touches[0];
+		if (touch) {
+			createIntroExplosion(touch.clientX, touch.clientY);
+		}
+	});
+
+	// Khi intro duration xong, bắt đầu bắn trái tim
+	setTimeout(() => {
+		introComplete = true;
+	}, introDuration);
+
+	animateIntro();
+}
+
+// ====================== MAIN FIREWORKS ======================
+
+"use strict";
+
 
 
 const IS_MOBILE = window.innerWidth <= 640;
@@ -3233,15 +3585,17 @@ const soundManager = {
 if (IS_HEADER) {
 	init();
 } else {
-	// Allow status to render, then preload assets and start app.
+	// Allow status to render, then preload assets and start intro animation.
 	setTimeout(() => {
 		// Tải trước âm thanh và ảnh nổ
 		var promises = [soundManager.preload(), preloadImages()];
 
-		// 在 soundManager 加载完毕后调用 init
-		Promise.all(promises).then(init, (reason) => {
+		// Khi tất cả tài nguyên đã load, bắt đầu intro animation
+		Promise.all(promises).then(() => {
+			initIntroAnimation();
+		}, (reason) => {
 			console.log("资源文件加载失败");
-			init();
+			initIntroAnimation();
 			return Promise.reject(reason);
 		});
 	}, 0);
