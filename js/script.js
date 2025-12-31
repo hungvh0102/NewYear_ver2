@@ -24,6 +24,29 @@ let introTargetDotsQueue = [];
 let introCurrentCharIndex = 0;
 let introAnimationDone = false;
 
+// ====================== BACKGROUND MUSIC ======================
+let backgroundMusic = null;
+
+function initBackgroundMusic() {
+	backgroundMusic = document.getElementById('background-music');
+	if (backgroundMusic) {
+		backgroundMusic.volume = 0.3; // Set volume to 30% (lower than normal)
+		backgroundMusic.loop = true; // Loop the music
+	}
+}
+
+function playBackgroundMusic() {
+	if (backgroundMusic && backgroundMusic.paused) {
+		// Use promise to handle autoplay restrictions
+		const playPromise = backgroundMusic.play();
+		if (playPromise !== undefined) {
+			playPromise.catch(error => {
+				console.log('Background music autoplay was prevented:', error);
+			});
+		}
+	}
+}
+
 function initIntroAnimation() {
 	introCanvas = document.getElementById('intro-canvas');
 	if (!introCanvas) return;
@@ -347,6 +370,9 @@ function initIntroAnimation() {
 		introComplete = true;
 	}, introDuration);
 
+	// Play background music when intro starts
+	playBackgroundMusic();
+
 	animateIntro();
 }
 
@@ -428,6 +454,7 @@ const imageSources = [
 	"./images/image3.jpeg",
 	"./images/image4.jpeg",
 	"./images/image5.jpeg",
+	"./images/image6.jpeg",
 ];
 const loadedImages = [];
 const imageBursts = [];
@@ -501,6 +528,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	var canvasContainer = document.querySelector(".canvas-container");
 	canvasContainer.style.backgroundImage = "url()";
 	canvasContainer.style.backgroundSize = "100%";
+	
+	// Initialize background music
+	initBackgroundMusic();
 });
 
 function fullscreenEnabled() {
