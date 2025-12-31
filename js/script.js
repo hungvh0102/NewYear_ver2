@@ -63,6 +63,10 @@ function initStartButton() {
 		countdownInProgress = true;
 		startBtn.style.display = 'none';
 		
+		// Show bear image
+		const bear = document.getElementById('intro-bear');
+		if (bear) bear.style.display = 'block';
+		
 		// Enable sound
 		store.setState({ soundEnabled: true });
 		
@@ -975,7 +979,7 @@ store.subscribe(handleStateChange);
 
 // Mảng câu chúc màu hồng
 const WISH_MESSAGES = [
-	"Bích Diệp",
+	"Chúc mừng năm mới Bích Diệp",
 	"Năm mới an khang thịnh vượng",
 	"Năm mới bình an",
 	"Chúc mọi điều ước của em đều trở thành hiện thực ✨",
@@ -992,9 +996,7 @@ const WISH_MESSAGES = [
 	"Chúc em có một năm mới đầy ắp tiếng cười và niềm vui 😂",
 	"Chúc em luôn thành công trong mọi lĩnh vực mà em theo đuổi 🏆",
 	"Chúc em năm mới kiếm thật nhiều tiền 💰",
-	"Bích Diệp",
-	"Năm mới an khang thịnh vượng",
-	"Năm mới bình an",
+	"Chúc mừng năm mới Bích Diệp",
 	"Chúc mọi điều ước của em đều trở thành hiện thực ✨",
 	"Chúc gia đình em luôn bình an và hạnh phúc ❤️",
 	"Chúc em luôn khỏe mạnh và tràn đầy năng lượng 💪",
