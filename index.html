@@ -223,6 +223,115 @@
 				display: none !important;
 			}
 
+			/* Nút Start trước intro */
+			#intro-start-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(0, 0, 0, 0.98);
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				z-index: 10000;
+				transition: opacity 0.5s ease-out;
+			}
+
+			#intro-start-overlay.hidden {
+				pointer-events: none;
+				opacity: 0;
+			}
+
+			.start-button {
+				padding: 20px 60px;
+				font-size: 54px;
+				font-weight: 700;
+				border: 2px solid rgba(255, 154, 217, 0.8);
+				border-radius: 50px;
+				background: linear-gradient(135deg, rgba(255, 105, 180, 0.6), rgba(255, 20, 147, 0.6));
+				color: #ff9ad9;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				text-shadow: 0 0 10px rgba(255, 105, 180, 0.9);
+				box-shadow:
+					0 0 20px rgba(255, 105, 180, 0.7),
+					0 0 40px rgba(255, 20, 147, 0.4),
+					inset 0 0 20px rgba(255, 255, 255, 0.2);
+				font-family: 'Dancing Script', cursive;
+				position: relative;
+				overflow: hidden;
+				animation: fireworksGlow 2s ease-in-out infinite;
+			}
+			}
+
+			.start-button:hover {
+				transform: scale(1.1);
+				box-shadow:
+					0 0 30px rgba(255, 105, 180, 0.9),
+					0 0 60px rgba(255, 20, 147, 0.6);
+			}
+
+			.start-button:active {
+				transform: scale(0.95);
+			}
+
+			@keyframes fireworksGlow {
+				0% {
+					box-shadow:
+						0 0 20px rgba(255, 105, 180, 0.7),
+						0 0 40px rgba(255, 20, 147, 0.4),
+						inset 0 0 20px rgba(255, 255, 255, 0.2);
+				}
+				50% {
+					box-shadow:
+						0 0 30px rgba(255, 105, 180, 0.9),
+						0 0 60px rgba(255, 20, 147, 0.6),
+						0 0 90px rgba(255, 255, 255, 0.4),
+						inset 0 0 30px rgba(255, 255, 255, 0.3);
+				}
+				100% {
+					box-shadow:
+						0 0 20px rgba(255, 105, 180, 0.7),
+						0 0 40px rgba(255, 20, 147, 0.4),
+						inset 0 0 20px rgba(255, 255, 255, 0.2);
+				}
+			}
+
+			#countdown-display {
+				font-size: 180px;
+				font-weight: 700;
+				color: #ff9ad9;
+				text-shadow:
+					0 0 20px rgba(255, 105, 180, 0.9),
+					0 0 40px rgba(255, 20, 147, 0.8);
+				margin-bottom: 60px;
+				font-family: 'Dancing Script', cursive;
+				opacity: 0;
+				transition: opacity 0.2s ease;
+			}
+
+			#countdown-display.show {
+				opacity: 1;
+			}
+
+			@keyframes countdownPulse {
+				0% {
+					transform: scale(1);
+				}
+				50% {
+					transform: scale(1.2);
+				}
+				100% {
+					transform: scale(1);
+				}
+			}
+
+			#countdown-display.pulse {
+				animation: countdownPulse 0.5s ease-in-out;
+			}
+
 			/* Intro rotate notice */
 			#intro-rotateNotice .overlay {
 				position: fixed;
@@ -287,11 +396,17 @@
 				</symbol>
 			</svg>
 		</div>
+		<!-- Start Overlay với nút Start và Countdown -->
+		<div id="intro-start-overlay">
+			<div id="countdown-display"></div>
+			<button class="start-button">START</button>
+		</div>
+
 		<!-- Intro Animation Canvas (từ Test folder) -->
-		<canvas id="intro-canvas" style="position: fixed; top: 0; left: 0; z-index: 9999; display: block;"></canvas>
+		<canvas id="intro-canvas" style="position: fixed; top: 0; left: 0; z-index: 9999; display: none;"></canvas>
 		<div id="intro-rotateNotice" style="display:none;">
 			<div class="overlay">
-				<p>Vui lòng xoay màn hình sang ngang để có trải nghiệm tốt nhất 🌟</p>
+				<p>Em xoay ngang điện thoại để có trải nghiệm tốt nhất nhé 🌟</p>
 			</div>
 		</div>
 		<img id="intro-bear" src="https://i.pinimg.com/originals/e5/c5/4c/e5c54cd43fd75a7ec5b7cf0f65838ec3.gif" alt="Bear" style="position: fixed; left: 10px; bottom: 50px; width: 110px; z-index: 10000;"/>

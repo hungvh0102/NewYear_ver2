@@ -47,6 +47,51 @@ function playBackgroundMusic() {
 	}
 }
 
+// ====================== START BUTTON & COUNTDOWN ======================
+let countdownInProgress = false;
+
+function initStartButton() {
+	const startBtn = document.querySelector('.start-button');
+	const overlay = document.getElementById('intro-start-overlay');
+	const countdownDisplay = document.getElementById('countdown-display');
+
+	if (!startBtn) return;
+
+	startBtn.addEventListener('click', () => {
+		if (countdownInProgress) return;
+
+		countdownInProgress = true;
+		startBtn.style.display = 'none';
+		
+		// Enable sound
+		store.setState({ soundEnabled: true });
+		
+		// Start countdown
+		let count = 5;
+		countdownDisplay.classList.add('show');
+		countdownDisplay.textContent = count;
+		
+		const countdownInterval = setInterval(() => {
+			count--;
+			
+			if (count > 0) {
+				countdownDisplay.classList.remove('pulse');
+				// Force reflow to restart animation
+				void countdownDisplay.offsetWidth;
+				countdownDisplay.classList.add('pulse');
+				countdownDisplay.textContent = count;
+			} else {
+				clearInterval(countdownInterval);
+				countdownDisplay.classList.remove('show');
+				overlay.classList.add('hidden');
+				
+				// Start intro animation
+				initIntroAnimation();
+			}
+		}, 1000);
+	});
+}
+
 function initIntroAnimation() {
 	introCanvas = document.getElementById('intro-canvas');
 	if (!introCanvas) return;
@@ -531,6 +576,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	
 	// Initialize background music
 	initBackgroundMusic();
+	
+	// Initialize start button
+	initStartButton();
 });
 
 function fullscreenEnabled() {
@@ -3647,17 +3695,16 @@ const soundManager = {
 if (IS_HEADER) {
 	init();
 } else {
-	// Allow status to render, then preload assets and start intro animation.
+	// Allow status to render, then preload assets (intro will start when user clicks START button).
 	setTimeout(() => {
 		// Tải trước âm thanh và ảnh nổ
 		var promises = [soundManager.preload(), preloadImages()];
 
-		// Khi tất cả tài nguyên đã load, bắt đầu intro animation
+		// Chỉ preload assets, không gọi initIntroAnimation (sẽ được gọi khi nhấn nút START)
 		Promise.all(promises).then(() => {
-			initIntroAnimation();
+			console.log("Assets preloaded successfully");
 		}, (reason) => {
 			console.log("资源文件加载失败");
-			initIntroAnimation();
 			return Promise.reject(reason);
 		});
 	}, 0);
