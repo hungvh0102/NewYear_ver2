@@ -16,7 +16,7 @@ let introShootingStars = [];
 const introFullText = ["Happy new year", "Bích Diệp"];
 const introFontSize = 180;
 const introFontFamily = "'Dancing Script', cursive"; // Quay lại Dancing Script
-const introLineHeight = 200; // Cách xa hơn để không bị chồng
+const introLineHeight = 250; // Cách xa hơn để không bị chồng
 const introBearX = 70;
 let introBearY = 0;
 let introDots = [];
@@ -927,6 +927,7 @@ store.subscribe(handleStateChange);
 
 // Mảng câu chúc màu hồng
 const WISH_MESSAGES = [
+	"Bích Diệp",
 	"Năm mới an khang thịnh vượng",
 	"Năm mới bình an",
 	"Chúc mọi điều ước của em đều trở thành hiện thực ✨",
@@ -935,6 +936,32 @@ const WISH_MESSAGES = [
 	"Chúc công việc thuận lợi, thăng tiến không ngừng 🚀",
 	"Chúc em luôn mỉm cười và yêu đời mỗi ngày 😊",
 	"Chúc em gặp nhiều may mắn và niềm vui 🎉",
+	"Chúc em có một năm mới tràn đầy hạnh phúc và thành công 🌟",
+	"Chúc em luôn xinh đẹp và rạng rỡ như hoa 🌸",
+	"Chúc em có những chuyến du lịch tuyệt vời trong năm mới 🌍",
+	"Chúc em luôn giữ được sự nhiệt huyết và đam mê trong cuộc sống 🔥",
+	"Chúc em luôn được yêu thương và quan tâm từ mọi người 💖",
+	"Chúc em có một năm mới đầy ắp tiếng cười và niềm vui 😂",
+	"Chúc em luôn thành công trong mọi lĩnh vực mà em theo đuổi 🏆",
+	"Chúc em năm mới kiếm thật nhiều tiền 💰",
+	"Bích Diệp",
+	"Năm mới an khang thịnh vượng",
+	"Năm mới bình an",
+	"Chúc mọi điều ước của em đều trở thành hiện thực ✨",
+	"Chúc gia đình em luôn bình an và hạnh phúc ❤️",
+	"Chúc em luôn khỏe mạnh và tràn đầy năng lượng 💪",
+	"Chúc công việc thuận lợi, thăng tiến không ngừng 🚀",
+	"Chúc em luôn mỉm cười và yêu đời mỗi ngày 😊",
+	"Chúc em gặp nhiều may mắn và niềm vui 🎉",
+	"Chúc em có một năm mới tràn đầy hạnh phúc và thành công 🌟",
+	"Chúc em luôn xinh đẹp và rạng rỡ như hoa 🌸",
+	"Chúc em có những chuyến du lịch tuyệt vời trong năm mới 🌍",
+	"Chúc em luôn giữ được sự nhiệt huyết và đam mê trong cuộc sống 🔥",
+	"Chúc em luôn được yêu thương và quan tâm từ mọi người 💖",
+	"Chúc em có một năm mới đầy ắp tiếng cười và niềm vui 😂",
+	"Chúc em luôn thành công trong mọi lĩnh vực mà em theo đuổi 🏆",
+	"Chúc em năm mới kiếm thật nhiều tiền 💰",
+	"From: HungVH"
 ];
 
 // Sinh 1 câu chúc bay lên
@@ -1286,7 +1313,7 @@ function startWishesLoop() {
 	// Tự động dừng lời chúc sau 30 giây
 	setTimeout(() => {
 		stopWishesLoop();
-	}, 30000);
+	}, 29000);
 
 	// Responsive: điều chỉnh timing và số lượng cho mobile
 	const isMobile = window.innerWidth <= 768;
@@ -2989,8 +3016,8 @@ class Shell {
 		if (imageBurstEnabled && !isFinalePhase && (!hasActiveWishes() || wishesStopped)) {
 			// Responsive: giảm tỷ lệ xuất hiện ảnh trên mobile
 			const isMobile = window.innerWidth <= 768;
-			// Desktop: 30% sẽ có ảnh, Mobile: chỉ 15% sẽ có ảnh (thỉnh thoảng mới có)
-			const imageChance = isMobile ? 0.15 : 0.3;
+			// Desktop: 3% sẽ có ảnh, Mobile: chỉ 1.5% sẽ có ảnh (rất hiếm)
+			const imageChance = isMobile ? 0.06 : 0.08;
 			const willShowImage = Math.random() < imageChance;
 			
 			if (willShowImage) {
