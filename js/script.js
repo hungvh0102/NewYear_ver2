@@ -5,7 +5,7 @@
 // ====================== INTRO ANIMATION (từ Test folder) ======================
 let introComplete = false;
 let introStartTime = null;
-const introDuration = 300; // 0.6 giây - nhanh gấp đôi
+const introDuration = 500; // 0.6 giây - nhanh gấp đôi
 
 // Biến toàn cục cho intro animation
 let introCanvas = null;
@@ -344,7 +344,7 @@ function initIntroAnimation() {
 			clearInterval(shootInterval);
 			clearInterval(shootStarInterval);
 		}
-	}, 30);
+	}, 15);
 
 	// Bắt đầu vòng lặp shooting star
 	const shootStarInterval = setInterval(() => {
