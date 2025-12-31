@@ -1283,6 +1283,11 @@ function startWishesLoop() {
 	wishesStarted = true;
 	wishesStopped = false; // Reset trạng thái dừng khi bắt đầu lại
 
+	// Tự động dừng lời chúc sau 30 giây
+	setTimeout(() => {
+		stopWishesLoop();
+	}, 30000);
+
 	// Responsive: điều chỉnh timing và số lượng cho mobile
 	const isMobile = window.innerWidth <= 768;
 	const initialDelay = isMobile ? 600 : 700; // Mobile: nhanh hơn một chút
