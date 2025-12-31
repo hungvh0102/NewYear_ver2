@@ -239,6 +239,17 @@
 				transition: opacity 0.5s ease-out;
 			}
 
+			/* Ẩn START overlay trên mobile portrait */
+			@media (max-width: 768px) {
+				#intro-start-overlay {
+					display: none;
+				}
+
+				#intro-start-overlay.show-on-landscape {
+					display: flex;
+				}
+			}
+
 			#intro-start-overlay.hidden {
 				pointer-events: none;
 				opacity: 0;

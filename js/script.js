@@ -581,9 +581,31 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Initialize background music
 	initBackgroundMusic();
 	
-	// Initialize start button
+	// Initialize start button and handle orientation
 	initStartButton();
+	handleOrientationChange();
+	
+	// Listen for orientation changes
+	window.addEventListener('orientationchange', handleOrientationChange);
+	window.addEventListener('resize', handleOrientationChange);
 });
+
+function handleOrientationChange() {
+	const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+	const isPortrait = window.innerHeight > window.innerWidth;
+	const overlay = document.getElementById('intro-start-overlay');
+	const rotateNotice = document.getElementById('intro-rotateNotice');
+
+	if (isMobile && isPortrait) {
+		// Portrait: show rotate notice, hide start overlay
+		if (rotateNotice) rotateNotice.style.display = 'block';
+		if (overlay) overlay.classList.remove('show-on-landscape');
+	} else {
+		// Landscape or desktop: hide rotate notice, show start overlay
+		if (rotateNotice) rotateNotice.style.display = 'none';
+		if (overlay) overlay.classList.add('show-on-landscape');
+	}
+}
 
 function fullscreenEnabled() {
 	return fscreen.fullscreenEnabled;
